@@ -10,7 +10,7 @@ ENV/
 .venv/
 
 # Django
-db.sqlite3
+
 media/
 
 # Static files collected by collectstatic
