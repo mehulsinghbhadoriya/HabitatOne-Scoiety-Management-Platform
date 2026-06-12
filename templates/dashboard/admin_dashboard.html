@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - ResiManage{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h4 class="mb-1 text-dark fw-bold">Admin Dashboard</h4>
+    <p class="text-muted mb-0 small">Overview of residential profiles, billing status, active complaints, and notifications.</p>
+</div>
+
+<!-- Metrics Row -->
+<div class="row g-3 mb-4">
+    <!-- Total Residents -->
+    <div class="col-md-4 col-sm-6">
+        <div class="card card-custom py-3 px-4 border-start border-primary border-4 mb-0">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="text-uppercase text-xs fw-semibold text-muted mb-1">Total Residents</h6>
+                    <h3 class="mb-0 fw-bold text-dark">{{ total_residents }}</h3>
+                </div>
+                <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                    <i class="bi bi-people fs-4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pending Complaints -->
+    <div class="col-md-4 col-sm-6">
+        <div class="card card-custom py-3 px-4 border-start border-danger border-4 mb-0">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="text-uppercase text-xs fw-semibold text-muted mb-1">Unresolved Issues</h6>
+                    <h3 class="mb-0 fw-bold text-dark">{{ pending_complaints }} <span class="text-xs text-muted fw-normal">/ {{ total_complaints }} total</span></h3>
+                </div>
+                <div class="bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                    <i class="bi bi-exclamation-octagon fs-4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Billing -->
+    <div class="col-md-4 col-sm-12">
+        <div class="card card-custom py-3 px-4 border-start border-success border-4 mb-0">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="text-uppercase text-xs fw-semibold text-muted mb-1">Maintenance Summary</h6>
+                    <h5 class="mb-0 text-dark fw-bold">
+                        <span class="text-success">${{ paid_sum }} Collected</span><br>
+                        <span class="text-warning text-xs">${{ pending_sum }} Outstanding</span>
+                    </h5>
+                </div>
+                <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                    <i class="bi bi-cash-coin fs-4"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Administrator Actions (Full Width Banner to prevent formatting gaps) -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card card-custom mb-0">
+            <div class="card-header-custom">
+                <h5 class="mb-0"><i class="bi bi-grid me-2 text-primary"></i>Quick Administrator Actions</h5>
+            </div>
+            <div class="card-body-custom">
+                <div class="row g-3">
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'residents:create' %}" class="btn btn-outline-primary w-100 py-3 d-flex flex-column align-items-center justify-content-center gap-2">
+                            <i class="bi bi-person-plus fs-3"></i>
+                            <span class="fw-semibold text-sm">Add Resident</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'notices:create' %}" class="btn btn-outline-primary w-100 py-3 d-flex flex-column align-items-center justify-content-center gap-2">
+                            <i class="bi bi-megaphone fs-3"></i>
+                            <span class="fw-semibold text-sm">Post Notice</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'maintenance:create' %}" class="btn btn-outline-primary w-100 py-3 d-flex flex-column align-items-center justify-content-center gap-2">
+                            <i class="bi bi-file-earmark-plus fs-3"></i>
+                            <span class="fw-semibold text-sm">Create Bill</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'complaints:list' %}" class="btn btn-outline-primary w-100 py-3 d-flex flex-column align-items-center justify-content-center gap-2">
+                            <i class="bi bi-chat-left-dots fs-3"></i>
+                            <span class="fw-semibold text-sm">View Complaints</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notice Board and Details Row -->
+<div class="row">
+    <!-- Notice Board -->
+    <div class="col-lg-6 mb-4">
+        <div class="card card-custom h-100 mb-0">
+            <div class="card-header-custom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-megaphone me-2 text-primary"></i>Recent Notices</h5>
+                <a href="{% url 'notices:list' %}" class="btn btn-link btn-sm text-decoration-none">View All</a>
+            </div>
+            <div class="card-body-custom">
+                {% for notice in recent_notices %}
+                    <div class="mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="fw-bold text-dark mb-1">{{ notice.title }}</h6>
+                            <span class="text-muted text-xs">{{ notice.created_at|date:"M d" }}</span>
+                        </div>
+                        <p class="text-muted small mb-0 text-truncate" style="max-width: 90%;">{{ notice.description }}</p>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-4 text-muted small">
+                        <i class="bi bi-megaphone d-block fs-2 mb-2 opacity-25"></i>
+                        No active notices.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- System Info & Settings Summary -->
+    <div class="col-lg-6 mb-4">
+        <div class="card card-custom h-100 mb-0">
+            <div class="card-header-custom">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-2 text-primary"></i>System Information</h5>
+            </div>
+            <div class="card-body-custom">
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                        <span class="text-muted">Database Engine:</span>
+                        <span class="text-dark fw-semibold">SQLite (local file)</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                        <span class="text-muted">Active Session:</span>
+                        <span class="text-dark fw-semibold">@{{ request.user.username }} (Logged in as admin)</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                        <span class="text-muted">Access Level:</span>
+                        <span class="badge bg-danger">Full Management Controls</span>
+                    </li>
+                </ul>
+                <div class="alert alert-info mt-4 small mb-0">
+                    <i class="bi bi-info-circle-fill me-1"></i> As an administrator, you can perform full CRUD operations on residents, notice updates, billing, and resolve active complaints. Use the navigation sidebar or quick action buttons to manage.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

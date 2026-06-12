@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Resident Directory - ResiManage{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1 text-dark fw-bold">Resident Directory</h4>
+        <p class="text-muted mb-0 small">Maintain and view all resident records, flats, and contact details.</p>
+    </div>
+    <a href="{% url 'residents:create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-person-plus-fill"></i> Add Resident
+    </a>
+</div>
+
+<div class="card card-custom">
+    <div class="card-header-custom">
+        <h5 class="mb-0">All Registered Residents</h5>
+    </div>
+    <div class="card-body-custom p-0">
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Flat Number</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Move-in Date</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resident in residents %}
+                        <tr>
+                            <td>
+                                <div class="fw-semibold text-dark">{{ resident.user.get_full_name|default:resident.user.username }}</div>
+                                <small class="text-muted">@{{ resident.user.username }}</small>
+                            </td>
+                            <td><span class="badge bg-primary-subtle text-primary font-monospace">Flat {{ resident.flat_number }}</span></td>
+                            <td>{{ resident.phone }}</td>
+                            <td>{{ resident.user.email }}</td>
+                            <td>{{ resident.move_in_date|date:"M d, Y" }}</td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'residents:detail' resident.pk %}" class="btn btn-outline-info" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'residents:edit' resident.pk %}" class="btn btn-outline-primary" title="Edit Resident">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'residents:delete' resident.pk %}" class="btn btn-outline-danger" title="Delete Resident">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-people fs-1 d-block mb-3 opacity-25"></i>
+                                <span>No residents found. Add a resident to get started.</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

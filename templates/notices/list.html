@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Notice Board - ResiManage{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1 text-dark fw-bold">Notice Board</h4>
+        <p class="text-muted mb-0 small">Stay updated with the latest circulars and announcements from society management.</p>
+    </div>
+    {% if request.user.role == 'ADMIN' %}
+        <a href="{% url 'notices:create' %}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="bi bi-megaphone-fill"></i> Post Notice
+        </a>
+    {% endif %}
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        {% for notice in notices %}
+            <div class="card card-custom mb-3">
+                <div class="card-body-custom">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h5 class="fw-bold text-dark mb-1">{{ notice.title }}</h5>
+                            <small class="text-muted text-xs d-flex align-items-center gap-1">
+                                <i class="bi bi-clock"></i> Posted on {{ notice.created_at|date:"F d, Y \a\t h:i A" }}
+                            </small>
+                        </div>
+                        {% if request.user.role == 'ADMIN' %}
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end text-sm">
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'notices:edit' notice.pk %}">
+                                            <i class="bi bi-pencil text-primary"></i> Edit Notice
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="{% url 'notices:delete' notice.pk %}">
+                                            <i class="bi bi-trash"></i> Delete Notice
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="text-muted text-sm mt-3" style="white-space: pre-wrap;">{{ notice.description }}</div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="card card-custom text-center py-5 text-muted">
+                <i class="bi bi-megaphone fs-1 d-block mb-3 opacity-25"></i>
+                <span>There are currently no active announcements on the Notice Board.</span>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

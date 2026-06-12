@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Resident Dashboard - ResiManage{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h4 class="mb-1 text-dark fw-bold">Resident Dashboard</h4>
+    <p class="text-muted mb-0 small">Welcome back! Access your billing history, file complaints, or pre-register upcoming visitors.</p>
+</div>
+
+{% if no_profile %}
+    <div class="alert alert-warning card-custom" role="alert">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-exclamation-triangle-fill fs-3 text-warning"></i>
+            <div>
+                <h5 class="alert-heading fw-bold mb-1">Resident Profile Missing</h5>
+                <p class="mb-0 small">Your user login is not yet linked to a residential flat profile. Please contact the society administrator to set up your flat details.</p>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <!-- Metrics Row -->
+    <div class="row g-3 mb-4">
+        <!-- Pending Dues -->
+        <div class="col-md-6">
+            <div class="card card-custom py-3 px-4 border-start border-danger border-4 mb-0">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase text-xs fw-semibold text-muted mb-1">Pending Maintenance Dues</h6>
+                        <h3 class="mb-0 fw-bold {% if pending_dues > 0 %}text-danger{% else %}text-success{% endif %}">
+                            ${{ pending_dues }}
+                        </h3>
+                    </div>
+                    <div class="bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-wallet2 fs-4"></i>
+                    </div>
+                </div>
+                {% if pending_dues > 0 %}
+                    <div class="mt-2">
+                        <a href="{% url 'maintenance:list' %}" class="text-xs fw-semibold text-decoration-none">View bills & submit payment &rarr;</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- My Complaints -->
+        <div class="col-md-6">
+            <div class="card card-custom py-3 px-4 border-start border-primary border-4 mb-0">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase text-xs fw-semibold text-muted mb-1">My Filed Complaints</h6>
+                        <h3 class="mb-0 fw-bold text-dark">{{ my_complaints_count }}</h3>
+                    </div>
+                    <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-chat-left-text fs-4"></i>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <a href="{% url 'complaints:list' %}" class="text-xs fw-semibold text-decoration-none">Track complaints or raise new one &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Notices -->
+        <div class="col-lg-6 mb-4">
+            <div class="card card-custom h-100 mb-0">
+                <div class="card-header-custom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-megaphone me-2 text-primary"></i>Recent Notices</h5>
+                    <a href="{% url 'notices:list' %}" class="btn btn-link btn-sm text-decoration-none">View All</a>
+                </div>
+                <div class="card-body-custom">
+                    {% for notice in recent_notices %}
+                        <div class="mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="fw-bold text-dark mb-1">{{ notice.title }}</h6>
+                                <span class="text-muted text-xs">{{ notice.created_at|date:"M d" }}</span>
+                            </div>
+                            <p class="text-muted small mb-0 text-truncate" style="max-width: 90%;">{{ notice.description }}</p>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4 text-muted small">
+                            <i class="bi bi-megaphone d-block fs-2 mb-2 opacity-25"></i>
+                            No notices from society management.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Expected Guests -->
+        <div class="col-lg-6 mb-4">
+            <div class="card card-custom h-100 mb-0">
+                <div class="card-header-custom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-door-open me-2 text-primary"></i>Upcoming Visitors</h5>
+                    <a href="{% url 'visitors:create' %}" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
+                        <i class="bi bi-plus-lg"></i> Pre-Register
+                    </a>
+                </div>
+                <div class="card-body-custom">
+                    {% for visitor in upcoming_visitors|slice:":4" %}
+                        <div class="d-flex justify-content-between align-items-center mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0">{{ visitor.visitor_name }}</h6>
+                                <small class="text-muted text-xs">Purpose: {{ visitor.purpose }}</small>
+                            </div>
+                            <span class="badge bg-secondary-subtle text-secondary font-monospace">{{ visitor.visit_date|date:"M d, Y" }}</span>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-5 text-muted small">
+                            <i class="bi bi-people d-block fs-2 mb-2 opacity-25"></i>
+                            No upcoming visitors pre-registered.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - ResiManage{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'maintenance:list' %}" class="btn btn-link p-0 text-decoration-none text-muted mb-2">
+        <i class="bi bi-arrow-left"></i> Back to Bills
+    </a>
+    <h4 class="mb-1 text-dark fw-bold">{{ title }}</h4>
+    <p class="text-muted mb-0 small">Create or update a maintenance bill for a specific resident.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <h5 class="mb-0"><i class="bi bi-cash-stack me-2 text-primary"></i>Maintenance Bill Details</h5>
+            </div>
+            <div class="card-body-custom">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger small">
+                            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.resident.id_for_label }}" class="form-label fw-semibold small">Resident occupant <span class="text-danger">*</span></label>
+                        {{ form.resident }}
+                        {% if form.resident.errors %}
+                            <div class="text-danger small mt-1">{% for error in form.resident.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.amount.id_for_label }}" class="form-label fw-semibold small">Amount ($) <span class="text-danger">*</span></label>
+                        {{ form.amount }}
+                        {% if form.amount.errors %}
+                            <div class="text-danger small mt-1">{% for error in form.amount.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.due_date.id_for_label }}" class="form-label fw-semibold small">Due Date <span class="text-danger">*</span></label>
+                        {{ form.due_date }}
+                        {% if form.due_date.errors %}
+                            <div class="text-danger small mt-1">{% for error in form.due_date.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold small">Payment Status <span class="text-danger">*</span></label>
+                        {{ form.status }}
+                        {% if form.status.errors %}
+                            <div class="text-danger small mt-1">{% for error in form.status.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-lg me-1"></i> Save Bill
+                        </button>
+                        <a href="{% url 'maintenance:list' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

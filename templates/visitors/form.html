@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Pre-Register Visitor - ResiManage{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'visitors:list' %}" class="btn btn-link p-0 text-decoration-none text-muted mb-2">
+        <i class="bi bi-arrow-left"></i> Back to Visitor Log
+    </a>
+    <h4 class="mb-1 text-dark fw-bold">Pre-Register Visitor</h4>
+    <p class="text-muted mb-0 small">Schedule expected guests, deliveries, or contractors for easier security clearance.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <h5 class="mb-0"><i class="bi bi-door-open me-2 text-primary"></i>Visitor Details</h5>
+            </div>
+            <div class="card-body-custom">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.visitor_name.id_for_label }}" class="form-label fw-semibold small">Visitor Full Name <span class="text-danger">*</span></label>
+                        {{ form.visitor_name }}
+                        {% if form.visitor_name.errors %}
+                            <div class="text-danger small mt-1">{% for error in form.visitor_name.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.visit_date.id_for_label }}" class="form-label fw-semibold small">Expected Visit Date <span class="text-danger">*</span></label>
+                        {{ form.visit_date }}
+                        {% if form.visit_date.errors %}
+                            <div class="text-danger small mt-1">{% for error in form.visit_date.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.purpose.id_for_label }}" class="form-label fw-semibold small">Purpose of Visit <span class="text-danger">*</span></label>
+                        {{ form.purpose }}
+                        {% if form.purpose.errors %}
+                            <div class="text-danger small mt-1">{% for error in form.purpose.errors %}{{ error }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-lg me-1"></i> Register Entry
+                        </button>
+                        <a href="{% url 'visitors:list' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

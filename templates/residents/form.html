@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - ResiManage{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'residents:list' %}" class="btn btn-link p-0 text-decoration-none text-muted mb-2">
+        <i class="bi bi-arrow-left"></i> Back to Directory
+    </a>
+    <h4 class="mb-1 text-dark fw-bold">{{ title }}</h4>
+    <p class="text-muted mb-0 small">Enter the user account credentials and residential flat details.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <h5 class="mb-0"><i class="bi bi-person-gear me-2 text-primary"></i>Resident Information Form</h5>
+            </div>
+            <div class="card-body-custom">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                <div class="small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="row g-3">
+                        <!-- User credentials block -->
+                        <div class="col-12">
+                            <h6 class="text-uppercase text-xs fw-bold text-muted border-bottom pb-2 mb-3">User Credentials</h6>
+                        </div>
+
+                        {% if form.username %}
+                        <div class="col-md-6">
+                            <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold small">Username <span class="text-danger">*</span></label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">{% for error in form.username.errors %}{{ error }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <div class="col-md-6">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold small">Email Address <span class="text-danger">*</span></label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{% for error in form.email.errors %}{{ error }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label fw-semibold small">First Name <span class="text-danger">*</span></label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="text-danger small mt-1">{% for error in form.first_name.errors %}{{ error }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label fw-semibold small">Last Name <span class="text-danger">*</span></label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="text-danger small mt-1">{% for error in form.last_name.errors %}{{ error }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold small">Password {% if not form.password.field.required %}(Optional){% else %}<span class="text-danger">*</span>{% endif %}</label>
+                            {{ form.password }}
+                            <div class="form-text text-muted small mt-1">{{ form.password.help_text }}</div>
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">{% for error in form.password.errors %}{{ error }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Flat Info Block -->
+                        <div class="col-12 mt-4">
+                            <h6 class="text-uppercase text-xs fw-bold text-muted border-bottom pb-2 mb-3">Residential Details</h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.flat_number.id_for_label }}" class="form-label fw-semibold small">Flat Number <span class="text-danger">*</span></label>
+                            {{ form.flat_number }}
+                            {% if form.flat_number.errors %}
+                                <div class="text-danger small mt-1">{% for error in form.flat_number.errors %}{{ error }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label fw-semibold small">Phone Number <span class="text-danger">*</span></label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="text-danger small mt-1">{% for error in form.phone.errors %}{{ error }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.family_members.id_for_label }}" class="form-label fw-semibold small">Family Members Count</label>
+                            {{ form.family_members }}
+                            {% if form.family_members.errors %}
+                                <div class="text-danger small mt-1">{% for error in form.family_members.errors %}{{ error }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.move_in_date.id_for_label }}" class="form-label fw-semibold small">Move-in Date <span class="text-danger">*</span></label>
+                            {{ form.move_in_date }}
+                            {% if form.move_in_date.errors %}
+                                <div class="text-danger small mt-1">{% for error in form.move_in_date.errors %}{{ error }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-check-lg me-1"></i> Save Profile
+                            </button>
+                            <a href="{% url 'residents:list' %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

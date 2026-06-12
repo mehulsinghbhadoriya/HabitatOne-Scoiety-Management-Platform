@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Resident Complaints - ResiManage{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h4 class="mb-1 text-dark fw-bold">Resident Complaints</h4>
+    <p class="text-muted mb-0 small">Review residents' raised complaints, log work progress, and update resolution statuses.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        {% for complaint in complaints %}
+            <div class="card card-custom mb-3">
+                <div class="card-body-custom">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <h5 class="fw-bold text-dark mb-0">{{ complaint.subject }}</h5>
+                                <span class="badge bg-primary-subtle text-primary font-monospace text-xs">Flat {{ complaint.resident.flat_number }}</span>
+                            </div>
+                            <small class="text-muted text-xs d-flex align-items-center gap-1">
+                                <i class="bi bi-person"></i> By {{ complaint.resident.user.get_full_name|default:complaint.resident.user.username }} on {{ complaint.created_at|date:"F d, Y \a\t h:i A" }}
+                            </small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div>
+                                {% if complaint.status == 'OPEN' %}
+                                    <span class="badge bg-secondary-subtle text-secondary badge-status">Open</span>
+                                {% elif complaint.status == 'IN_PROGRESS' %}
+                                    <span class="badge bg-warning-subtle text-warning badge-status">In Progress</span>
+                                {% elif complaint.status == 'RESOLVED' %}
+                                    <span class="badge bg-success-subtle text-success badge-status">Resolved</span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'complaints:update_status' complaint.pk %}" class="btn btn-sm btn-outline-primary ms-2 d-flex align-items-center gap-1">
+                                <i class="bi bi-pencil-square"></i> Update Status
+                            </a>
+                        </div>
+                    </div>
+                    <div class="text-muted text-sm mt-3" style="white-space: pre-wrap;">{{ complaint.description }}</div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="card card-custom text-center py-5 text-muted">
+                <i class="bi bi-chat-left-text fs-1 d-block mb-3 opacity-25"></i>
+                <span>No complaints registered in the system. Everything is running smoothly!</span>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

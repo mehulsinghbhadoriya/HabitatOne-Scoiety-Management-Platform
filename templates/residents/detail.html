@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Resident Profile - ResiManage{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'residents:list' %}" class="btn btn-link p-0 text-decoration-none text-muted mb-2">
+        <i class="bi bi-arrow-left"></i> Back to Directory
+    </a>
+    <h4 class="mb-1 text-dark fw-bold">Resident Profile Details</h4>
+    <p class="text-muted mb-0 small">Detailed information for Flat {{ resident.flat_number }}'s occupant.</p>
+</div>
+
+<div class="row">
+    <!-- Info Card -->
+    <div class="col-lg-4">
+        <div class="card card-custom mb-4">
+            <div class="card-body-custom text-center py-4">
+                <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold mx-auto mb-3" style="width: 72px; height: 72px; font-size: 1.8rem;">
+                    {{ resident.user.username|make_list|first|upper }}
+                </div>
+                <h5 class="fw-bold text-dark mb-1">{{ resident.user.get_full_name|default:resident.user.username }}</h5>
+                <p class="text-muted small mb-3">@{{ resident.user.username }}</p>
+                <span class="badge bg-primary-subtle text-primary font-monospace px-3 py-2 fs-6">Flat {{ resident.flat_number }}</span>
+            </div>
+            <div class="border-top p-3">
+                <div class="d-flex justify-content-between mb-2 small text-muted">
+                    <span>Email:</span>
+                    <span class="text-dark fw-medium">{{ resident.user.email }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 small text-muted">
+                    <span>Phone:</span>
+                    <span class="text-dark fw-medium">{{ resident.phone }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 small text-muted">
+                    <span>Family Members:</span>
+                    <span class="text-dark fw-medium">{{ resident.family_members }} members</span>
+                </div>
+                <div class="d-flex justify-content-between small text-muted">
+                    <span>Move-in Date:</span>
+                    <span class="text-dark fw-medium">{{ resident.move_in_date|date:"F d, Y" }}</span>
+                </div>
+            </div>
+            {% if request.user.role == 'ADMIN' %}
+                <div class="card-footer bg-white border-top p-3 d-flex gap-2">
+                    <a href="{% url 'residents:edit' resident.pk %}" class="btn btn-outline-primary btn-sm w-50">
+                        <i class="bi bi-pencil"></i> Edit Profile
+                    </a>
+                    <a href="{% url 'residents:delete' resident.pk %}" class="btn btn-outline-danger btn-sm w-50">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Linked details -->
+    <div class="col-lg-8">
+        <!-- Maintenance Dues -->
+        <div class="card card-custom mb-4">
+            <div class="card-header-custom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-cash-stack me-2 text-primary"></i>Maintenance Bills</h5>
+                {% if request.user.role == 'ADMIN' %}
+                    <a href="{% url 'maintenance:create' %}?resident={{ resident.pk }}" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
+                        <i class="bi bi-plus-lg"></i> Add Bill
+                    </a>
+                {% endif %}
+            </div>
+            <div class="card-body-custom p-0">
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bill in resident.bills.all %}
+                                <tr>
+                                    <td>{{ bill.due_date|date:"F d, Y" }}</td>
+                                    <td class="fw-bold">${{ bill.amount }}</td>
+                                    <td>
+                                        {% if bill.status == 'PAID' %}
+                                            <span class="badge bg-success-subtle text-success badge-status">Paid</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger badge-status">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted small">No maintenance bill generated.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaints -->
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                <h5 class="mb-0"><i class="bi bi-chat-left-text me-2 text-primary"></i>Recent Complaints</h5>
+            </div>
+            <div class="card-body-custom p-0">
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Date Raised</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for complaint in resident.complaints.all %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold text-dark">{{ complaint.subject }}</div>
+                                    </td>
+                                    <td>{{ complaint.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if complaint.status == 'OPEN' %}
+                                            <span class="badge bg-secondary-subtle text-secondary badge-status">Open</span>
+                                        {% elif complaint.status == 'IN_PROGRESS' %}
+                                            <span class="badge bg-warning-subtle text-warning badge-status">In Progress</span>
+                                        {% elif complaint.status == 'RESOLVED' %}
+                                            <span class="badge bg-success-subtle text-success badge-status">Resolved</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted small">No complaints filed by this resident.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

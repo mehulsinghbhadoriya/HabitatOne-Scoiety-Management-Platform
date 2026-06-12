@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Visitor Log Administration - ResiManage{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h4 class="mb-1 text-dark fw-bold">Visitor Records</h4>
+    <p class="text-muted mb-0 small">Overview of all pre-registered and upcoming visitors scheduled by residents.</p>
+</div>
+
+<div class="card card-custom">
+    <div class="card-header-custom">
+        <h5 class="mb-0">All Scheduled Visitor Entries</h5>
+    </div>
+    <div class="card-body-custom p-0">
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th>Visitor Name</th>
+                        <th>Host Resident</th>
+                        <th>Flat Number</th>
+                        <th>Visit Date</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visitor in visitors %}
+                        <tr>
+                            <td class="fw-bold text-dark">{{ visitor.visitor_name }}</td>
+                            <td>{{ visitor.resident.user.get_full_name|default:visitor.resident.user.username }}</td>
+                            <td><span class="badge bg-primary-subtle text-primary font-monospace">Flat {{ visitor.resident.flat_number }}</span></td>
+                            <td>{{ visitor.visit_date|date:"F d, Y" }}</td>
+                            <td>{{ visitor.purpose }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-people fs-1 d-block mb-3 opacity-25"></i>
+                                <span>No visitor entries logged in the system.</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
